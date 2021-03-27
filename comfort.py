@@ -323,6 +323,43 @@ chart_data = pd.DataFrame(
         columns=["Cold", "Hot"])
 
 st.bar_chart(chart_data)
+
+classification = []
+
+
+#Exporting to csv or SQL server
+unseen_data = pd.read_csv('unseen.csv')
+unseen_data = pd.DataFrame(unseen_data)
+length = len(unseen_data.index)
+length
+output_data = unseen_data.copy()
+def column(matrix, i):
+    return[row[i] for row in matrix]
+
+cold_column = column(prediction_proba, 0)
+hot_column = column(prediction_proba, 1)
+
+print(classes[0], cold_column)
+print(classes[1], hot_column)
+
+def compare():
+    for i in range (0, length):
+        if cold_column[i] < hot_column[i]:
+            classification.insert(i, "HOT")
+        else:
+            classification.insert(i, "COLD")
+    return[classification]
+
+output = compare()
+output = np.array(output)
+output = np.transpose(output)
+
+output_data["Predictions - COLD or HOT"] = prediction
+output_data["Predictions - Probability of Hot"] = hot_column
+output_data["Predictions - Probability of Cold"] = cold_column
+output_data
+output_data.to_csv("Thermal_Comfort_Prediction_Upper.csv", sep = '\t', index = False)
+
 # oob_score = model.oob_score_
 # print("The final oob score is:", oob_score)
 
