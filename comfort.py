@@ -18,9 +18,11 @@ from sklearn.metrics import roc_auc_score
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import webbrowser
 from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 
+url = 'https://www.weatherstats.ca/'
 # to look at all columns in dataset if needed
 def printall(X, max_rows=10):
     from IPython.display import display, HTML
@@ -243,26 +245,33 @@ st.write("""
 ### Predict thermal comfort given variables on the left """)
 
 st.sidebar.header('User Input Parameters')
+col1, col2, col3 = st.sidebar.beta_columns(3)
 # ['unorth', 'uwest', 'usouth', 'ueast', 'Shroud North', 'Shroud West', 'Shroud South', 'Shroud East', 'Lag Shroud North', 'Lag Shroud West', 'Lag Shroud South', 'LagShroud East', 'uWEST zone', 'uNORTH zone', 'uEAST zone', 'uSOUTH zone', 'OAT', 'Lagging OAT (1hr)', 'pressure_station', 'wind_speed', 'relative_humidity', 'max_air_temp_pst1hr', 'min_air_temp_pst1hr']
 def user_input_features():
-    unorth = st.sidebar.slider('unorth', 90.0, 163.9, 123.2644)
-    uwest = st.sidebar.slider('uwest', 90.0, 162.289, 116.8894)
-    usouth = st.sidebar.slider('usouth', 90.0, 162.289, 116.1613)
-    ueast = st.sidebar.slider('ueast', 90.0, 162.289, 112.211)
-    Shroud_North = st.sidebar.slider('Shroud North', 0.32574, 1.0, 0.621799921)
-    Shroud_West = st.sidebar.slider('Shroud West', -0.40503, 1.0, 0.64936969)
-    Shroud_South = st.sidebar.slider('Shroud South', 0.216652, 1.0, 0.903140685)
-    Shroud_East = st.sidebar.slider('Shroud East', 0.059244, 1.0, 1.0)
-    Lag_Shroud_North = st.sidebar.slider('Lag Shroud North', 0.300682, 1.0, 0.738706428)
-    Lag_Shroud_West = st.sidebar.slider('Lag Shroud West', 0.30068204, 1.0, 0.714224336)
-    Lag_Shroud_South = st.sidebar.slider('Lag Shroud South', -0.160854969, 1.0, 0.9965169)
-    LagShroud_East = st.sidebar.slider('LagShroud East', 0.039509997, 1.0, 1.0)
-    uWEST_zone = st.sidebar.slider('uWEST zone', 65.58956, 75.75271, 71.93018)
-    uNORTH_zone = st.sidebar.slider('uNORTH zone', 64.38702, 72.99919, 71.89948)
-    uEAST_zone = st.sidebar.slider('uEAST zone', 65.54574, 76.11459, 72.59882)
-    uSOUTH_zone = st.sidebar.slider('uSOUTH zone', 65.47312, 77.03263, 73.57618)
-    OAT = st.sidebar.slider('OAT', -0.4084013, 78.90985, 25.48777)
-    Lagging_OAT = st.sidebar.slider('Lagging OAT', 0.6155012, 77.03983, 24.35927)
+    st.sidebar.subheader("Internal Factors")
+    unorth = st.sidebar.slider('North Upper Setpoint', 90.0, 163.9, 123.2644 )
+    st.markdown('<style>#vg-tooltip-element{z-index: 1000051}</style>',
+            unsafe_allow_html=True)
+    uwest = st.sidebar.slider('West Upper Setpoint', 90.0, 162.289, 116.8894)
+    usouth = st.sidebar.slider('South Upper Setpoint', 90.0, 162.289, 116.1613)
+    ueast = st.sidebar.slider('East Upper Setpoint', 90.0, 162.289, 112.211)
+    Shroud_North = st.sidebar.slider('Solar Shroud North', 0.32574, 1.0, 0.621799921)
+    Shroud_West = st.sidebar.slider('Solar Shroud West', -0.40503, 1.0, 0.64936969)
+    Shroud_South = st.sidebar.slider('Solar Shroud South', 0.216652, 1.0, 0.903140685)
+    Shroud_East = st.sidebar.slider('Solar Shroud East', 0.059244, 1.0, 1.0)
+    Lag_Shroud_North = st.sidebar.slider('Lag Solar Shroud North', 0.300682, 1.0, 0.738706428)
+    Lag_Shroud_West = st.sidebar.slider('Lag Solar Shroud West', 0.30068204, 1.0, 0.714224336)
+    Lag_Shroud_South = st.sidebar.slider('Lag Solar Shroud South', -0.160854969, 1.0, 0.9965169)
+    LagShroud_East = st.sidebar.slider('Lag Solar Shroud East', 0.039509997, 1.0, 1.0)
+    uWEST_zone = st.sidebar.slider('Upper West Zone Temp', 65.58956, 75.75271, 71.93018)
+    uNORTH_zone = st.sidebar.slider('Upper North Zone Temp', 64.38702, 72.99919, 71.89948)
+    uEAST_zone = st.sidebar.slider('Upper East Zone Temp', 65.54574, 76.11459, 72.59882)
+    uSOUTH_zone = st.sidebar.slider('Upper South Zone Temp', 65.47312, 77.03263, 73.57618)
+    OAT = st.sidebar.slider('Outside Air Temp', -0.4084013, 78.90985, 25.48777)
+    Lagging_OAT = st.sidebar.slider('Lagging Outside Air Temp', 0.6155012, 77.03983, 24.35927)
+    st.sidebar.subheader("External Factors")
+    if st.sidebar.button("Open Weather Data Website","https://www.weatherstats.ca/" ):
+        webbrowser.open_new_tab(url)
     pressure_station = st.sidebar.slider('pressure_station', 98.09, 103.66, 99.59)
     wind_speed = st.sidebar.slider('wind_speed', 0.0, 61.0, 50.0)
     relative_humidity = st.sidebar.slider('relative_humidity', 31.0 , 100.0, 65.0)
@@ -294,71 +303,72 @@ def user_input_features():
             }
     features = pd.DataFrame(data1, index=[1064])
     return features
-
 df1 = user_input_features()
+def model(df1):
+    st.subheader('User Input parameters')
+    st.write(df1)
+    best_model = RandomForestClassifier(max_depth=None, n_estimators=2000, oob_score=True, n_jobs=-1, random_state=42, max_features="auto", min_samples_leaf=5)
 
-st.subheader('User Input parameters')
-st.write(df1)
-best_model = RandomForestClassifier(max_depth=None, n_estimators=2000, oob_score=True, n_jobs=-1, random_state=42, max_features="auto", min_samples_leaf=5)
+    best_model.fit(X_train, y_train)
 
-best_model.fit(X_train, y_train)
+    prediction = best_model.predict(df1)
+    prediction_proba = best_model.predict_proba(df1)
+    classes = best_model.classes_
+    st.subheader('Class labels and their corresponding index number')
+    st.write(classes)
 
-prediction = best_model.predict(df1)
-prediction_proba = best_model.predict_proba(df1)
-classes = best_model.classes_
+    st.subheader('Prediction')
+    st.write(prediction)
+    #st.write(prediction)
 
+    st.subheader('Prediction Probability')
+    st.write(prediction_proba)
 
-st.subheader('Class labels and their corresponding index number')
-st.write(classes)
+    chart_data = pd.DataFrame(
+            prediction_proba,
+            columns=["Cold", "Hot"])
 
-st.subheader('Prediction')
-st.write(prediction)
-#st.write(prediction)
+    st.bar_chart(chart_data)
 
-st.subheader('Prediction Probability')
-st.write(prediction_proba)
-
-chart_data = pd.DataFrame(
-        prediction_proba,
-        columns=["Cold", "Hot"])
-
-st.bar_chart(chart_data)
-
-classification = []
+    classification = []
 
 
-#Exporting to csv or SQL server
-unseen_data = pd.read_csv('unseen.csv')
-unseen_data = pd.DataFrame(unseen_data)
-length = len(unseen_data.index)
-length
-output_data = unseen_data.copy()
-def column(matrix, i):
-    return[row[i] for row in matrix]
+    #Exporting to csv or SQL server
+    unseen_data = pd.read_csv('unseen.csv')
+    unseen_data = pd.DataFrame(unseen_data)
+    length = len(unseen_data.index)
+    length
+    output_data = unseen_data.copy()
+    def column(matrix, i):
+        return[row[i] for row in matrix]
 
-cold_column = column(prediction_proba, 0)
-hot_column = column(prediction_proba, 1)
+    cold_column = column(prediction_proba, 0)
+    hot_column = column(prediction_proba, 1)
 
-print(classes[0], cold_column)
-print(classes[1], hot_column)
+    print(classes[0], cold_column)
+    print(classes[1], hot_column)
 
-def compare():
-    for i in range (0, length):
-        if cold_column[i] < hot_column[i]:
-            classification.insert(i, "HOT")
-        else:
-            classification.insert(i, "COLD")
-    return[classification]
+    def compare():
+        for i in range (0, length):
+            if cold_column[i] < hot_column[i]:
+                classification.insert(i, "HOT")
+            else:
+                classification.insert(i, "COLD")
+        return[classification]
 
-output = compare()
-output = np.array(output)
-output = np.transpose(output)
+    output = compare()
+    output = np.array(output)
+    output = np.transpose(output)
 
-output_data["Predictions - COLD or HOT"] = prediction
-output_data["Predictions - Probability of Hot"] = hot_column
-output_data["Predictions - Probability of Cold"] = cold_column
-output_data
-output_data.to_csv("Thermal_Comfort_Prediction_Upper.csv", sep = '\t', index = False)
+    output_data["Predictions - COLD or HOT"] = prediction
+    output_data["Predictions - Probability of Hot"] = hot_column
+    output_data["Predictions - Probability of Cold"] = cold_column
+    output_data
+    output_data.to_csv("Thermal_Comfort_Prediction_Upper.csv", sep = '\t', index = False)
+# Create a button, that when clicked, shows a text
+if(st.button("Run")):
+    st.text("Running")
+    model(df1)
 
 # oob_score = model.oob_score_
 # print("The final oob score is:", oob_score)
