@@ -23,6 +23,8 @@ from matplotlib import pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
 import streamlit as st
 import webbrowser
+import time
+
 df = pd.read_csv('Upper_Data.csv')
 
 url = 'https://www.weatherstats.ca/' # URL for weather website
@@ -41,7 +43,8 @@ data = list(X.columns.values)
 X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8, test_size=0.2)
 
 # Final Model
-
+# Sidebar
+st.sidebar.header('User Input Parameters')
 # Creating the dataset that the model will make the prediction from
 # uses sliders to choose values
 
@@ -104,6 +107,7 @@ df1 = user_input_features()
 
 
 def model_upper(df1):  #creating a function that can be called to run the model
+        
     st.subheader('User Input parameters')
     st.write(df1)
 
@@ -174,7 +178,7 @@ def model_upper(df1):  #creating a function that can be called to run the model
     output_data["Predictions - Probability of Cold"] = cold_column
     #output_data
     output_data.to_csv("Thermal_Comfort_Prediction_Upper.csv", sep = '\t', index = False)
-    st.balloons()
+    st.success('Done!')
 
 def model_lower(df1): #creating a function that can be called to run the model
     st.subheader('User Input parameters')
@@ -243,21 +247,22 @@ def model_lower(df1): #creating a function that can be called to run the model
     output_data["Predictions - Probability of Cold"] = cold_column
     # output_data
     output_data.to_csv("Thermal_Comfort_Prediction_Lower.csv", sep = '\t', index = False)
+    st.success('Done!')
 # Streamlit Interface
 # Header
 st.title("Occupant Thermal Comfort Program")
-col1, col2 = st.beta_columns([6,1])
+st.header("How to use?")
+st.info("\n 1. Find the Parameter you would like to manipulate from the sidebar \n 2. Adjust the Slider to the appropriate value \n 3. Once Satisfied, Click the 'Run' Button")
+col1, col2 = st.beta_columns([5,5])
 with col1:
-     st.header("How to use?")
-     st.info("\n 1. Find the Parameter you would like to manipulate from the sidebar \n 2. Adjust the Slider to the appropriate value \n 3. Once Satisfied, Click the 'Run' Button")
      if(st.button("Run for Upper")): # Create a button, that when clicked, runs the program
-             st.text("Running")
-             model_upper(df1) 
+             
+             model_upper(df1)   
+with col2:
      if(st.button("Run for Lower")): # Create a button, that when clicked, runs the program
-             st.text("Running")
-             model_lower(df1)     
-# Sidebar
-st.sidebar.header('User Input Parameters')
+             
+             model_lower(df1)   
+
 
 
 
