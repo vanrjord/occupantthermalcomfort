@@ -3,7 +3,7 @@
 
 # # Thermal Comfort Predictor - Upper
 # ## Developed by Alex C. & Jordan V. @ Ryerson's Capstone 2021 </span>
-# ### [Front-End Website](https://share.streamlit.io/vanrjord/occupantthermalcomfort/main/comfort.py) 
+# ### [Front-End Website](https://share.streamlit.io/vanrjord/occupantthermalcomfort/main/comfortprogram.py) 
 # ---
 # #### Note: Program can be retrained with any dataset
 # #### Email: q1cheng@ryerson.ca or jvanriel@ryerson.ca for any questions regarding this program
